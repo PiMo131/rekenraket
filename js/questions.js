@@ -77,8 +77,13 @@ function genSub(level) {
 
 /* ---------- keersommen ---------- */
 function makeMul(t, i) {
-  // beide richtingen oefenen: 7 × 3 én 3 × 7
+  // beide richtingen oefenen: 7 × 3 én 3 × 7 (willekeurig, voor klassiek)
   const [a, b] = Math.random() < 0.5 ? [t, i] : [i, t];
+  return mulFact(a, b);
+}
+
+/* Eén keersom met vaste, gegeven volgorde (a × b). */
+function mulFact(a, b) {
   return { cat: 'mul', text: `${a} × ${b}`, answer: a * b, key: `m:${a}x${b}` };
 }
 
@@ -97,14 +102,18 @@ export function generateQuestion(cat, level) {
   return cat === 'mul' ? makeMul(t, i) : makeDiv(t, i);
 }
 
-/* Alle mogelijke sommen voor gekozen tafels (tafels-kiezer).
-   op: 'mul' | 'div' | 'both' */
-export function enumerateTableFacts(tables, op) {
+/* Alle sommen voor de gekozen tafels (tafels-kiezer).
+   Alleen KEERSOMMEN, en alleen de vorm zoals op school geleerd:
+   n × tafel  (1 × 6, 2 × 6, ... 10 × 6) — het getal vooraan, de
+   tafel achteraan. De "heen"-vorm (6 × n) en deelsommen horen
+   hier bewust niet bij; delen zit alleen in de klassieke modus. */
+export function enumerateTableFacts(tables) {
   const out = [];
+  const seen = new Set();
   for (const t of tables) {
     for (let i = 1; i <= 10; i++) {
-      if (op === 'mul' || op === 'both') out.push(makeMul(t, i));
-      if (op === 'div' || op === 'both') out.push(makeDiv(t, i));
+      const q = mulFact(i, t);          // omgekeerd: n × tafel
+      if (!seen.has(q.key)) { seen.add(q.key); out.push(q); }
     }
   }
   return out;
