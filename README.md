@@ -38,7 +38,7 @@ rekenraket/
     ├── engine.js       # adaptieve vraagmotor (mastery, gewogen selectie)
     ├── code.js         # geheime voortgangscodes (base32 + checksum)
     ├── storage.js      # localStorage-laag
-    └── minigame.js     # speelpauze: "Sterren vangen"
+    └── minigame.js     # speelpauze: Slang (Snake)
 ```
 
 ## Hoe de levels werken
