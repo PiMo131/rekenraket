@@ -242,10 +242,6 @@ function buildTableChips() {
     label.append(input, span);
     grid.appendChild(label);
   }
-  // soort sommen terugzetten
-  document.querySelectorAll('.seg-btn').forEach((b) => {
-    b.classList.toggle('active', b.dataset.op === state.tablesOp);
-  });
 }
 
 function startTablesRound() {
@@ -253,14 +249,8 @@ function startTablesRound() {
     .map((i) => parseInt(i.value, 10));
   if (chosen.length === 0) { toast('Kies eerst minstens één tafel! ✖️'); return; }
   state.tables = chosen;
-  state.tablesOp = document.querySelector('.seg-btn.active').dataset.op;
   saveState(state);
-  startRound({
-    mode: 'tables',
-    cat: state.tablesOp === 'div' ? 'div' : 'mul',
-    tables: chosen,
-    op: state.tablesOp,
-  });
+  startRound({ mode: 'tables', cat: 'mul', tables: chosen });
 }
 
 /* ---------------- geheime code ---------------- */
@@ -306,12 +296,6 @@ function bindEvents() {
   });
 
   // tafels
-  document.querySelectorAll('.seg-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.seg-btn').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
-  });
   $('btn-start-tables').addEventListener('click', startTablesRound);
 
   // numpad
@@ -349,7 +333,8 @@ function bindEvents() {
       $('mini-arena'), $('mini-score'), $('mini-timer'),
       state.settings.reducedMotion,
       (score) => {
-        toast(`Je ving ${score} sterren! ✨ Op naar de volgende ronde!`);
+        const lekker = score === 1 ? 'appeltje' : 'appeltjes';
+        toast(`Je at ${score} ${lekker}! 🍎 Op naar de volgende ronde!`);
         show('home');
       },
     );
