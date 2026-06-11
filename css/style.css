@@ -354,25 +354,20 @@ button:focus-visible, input:focus-visible, .key:focus-visible {
 .mini-timer { text-align: right; color: var(--star); }
 
 .mini-arena {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: min(62vh, 540px);
   border-radius: var(--radius);
   background: var(--white-12);
   overflow: hidden;
-  touch-action: manipulation;
+  touch-action: none;          /* swipe niet als scroll oppakken */
 }
 
-.mini-star {
-  position: absolute;
-  font-size: 2.4rem;
-  cursor: pointer;
-  user-select: none;
-  border: none; background: none; padding: 6px;
-  transition: top linear; /* duur via JS */
-}
-.mini-star.pop { animation: star-pop .3s ease forwards; }
-@keyframes star-pop {
-  to { transform: scale(2); opacity: 0; }
+.snake-canvas {
+  border-radius: 12px;
+  touch-action: none;
+  display: block;
 }
 
 .mini-hint { text-align: center; opacity: .85; }
