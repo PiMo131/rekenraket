@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="RekenRaket – oefen optellen, aftrekken, keersommen en deelsommen. Snel, leuk en zonder account.">
+  <title>RekenRaket 🚀 – Rekenen oefenen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+  <header class="topbar" id="topbar" hidden>
+    <button class="icon-btn" id="btn-home" aria-label="Naar het startscherm">🏠</button>
+    <div class="fuel" aria-label="Brandstofmeter">
+      <div class="fuel-label"><span id="pilot-level">Piloot niveau 1</span><span id="xp-text">0 XP</span></div>
+      <div class="fuel-track"><div class="fuel-bar" id="fuel-bar"></div></div>
+    </div>
+    <div class="star-count" aria-label="Verdiende sterren">⭐ <span id="star-total">0</span></div>
+  </header>
+
+  <main id="app">
+
+    <!-- ===== Welkom / eerste keer ===== -->
+    <section class="screen" id="screen-welcome">
+      <div class="hero">
+        <div class="rocket-big" aria-hidden="true">🚀</div>
+        <h1 class="logo">Reken<span>Raket</span></h1>
+        <p class="tagline">Oefen sommen en vlieg naar de sterren!</p>
+      </div>
+      <div class="stack">
+        <button class="btn btn-primary btn-xl" data-go="home">🚀 Start een nieuw avontuur</button>
+        <button class="btn btn-ghost" data-go="code">🔑 Ik heb een geheime code</button>
+      </div>
+    </section>
+
+    <!-- ===== Home ===== -->
+    <section class="screen" id="screen-home">
+      <h1 class="screen-title">Wat ga je oefenen?</h1>
+      <div class="mode-grid">
+        <button class="mode-card" data-go="category">
+          <span class="mode-emoji" aria-hidden="true">🧮</span>
+          <span class="mode-name">Oefenen</span>
+          <span class="mode-desc">Plus, min, keer of delen</span>
+        </button>
+        <button class="mode-card" data-go="tables">
+          <span class="mode-emoji" aria-hidden="true">✖️</span>
+          <span class="mode-name">Tafels kiezen</span>
+          <span class="mode-desc">Kies zelf je tafels (1 t/m 10)</span>
+        </button>
+      </div>
+      <div class="stack mt">
+        <button class="btn btn-ghost" data-go="code">🔑 Geheime code invoeren</button>
+        <button class="btn btn-ghost" data-go="info">👨‍👩‍👧 Voor ouders en leraren</button>
+      </div>
+    </section>
+
+    <!-- ===== Categorie kiezen (Klassiek oefenen) ===== -->
+    <section class="screen" id="screen-category">
+      <h1 class="screen-title">Kies een soort som</h1>
+      <div class="mode-grid" id="category-grid">
+        <button class="mode-card" data-cat="add">
+          <span class="mode-emoji" aria-hidden="true">➕</span>
+          <span class="mode-name">Plussommen</span>
+          <span class="mode-desc" id="lvl-add">Level 1</span>
+        </button>
+        <button class="mode-card" data-cat="sub">
+          <span class="mode-emoji" aria-hidden="true">➖</span>
+          <span class="mode-name">Minsommen</span>
+          <span class="mode-desc" id="lvl-sub">Level 1</span>
+        </button>
+        <button class="mode-card" data-cat="mul">
+          <span class="mode-emoji" aria-hidden="true">✖️</span>
+          <span class="mode-name">Keersommen</span>
+          <span class="mode-desc" id="lvl-mul">Level 1</span>
+        </button>
+        <button class="mode-card" data-cat="div">
+          <span class="mode-emoji" aria-hidden="true">➗</span>
+          <span class="mode-name">Deelsommen</span>
+          <span class="mode-desc" id="lvl-div">Level 1</span>
+        </button>
+      </div>
+      <button class="btn btn-ghost mt" data-go="home">← Terug</button>
+    </section>
+
+    <!-- ===== Tafels kiezen ===== -->
+    <section class="screen" id="screen-tables">
+      <h1 class="screen-title">Welke tafels wil je oefenen?</h1>
+      <div class="card">
+        <div class="table-grid" id="table-grid" role="group" aria-label="Kies tafels">
+          <!-- checkboxes 1..10 via JS -->
+        </div>
+        <div class="seg" role="group" aria-label="Soort sommen">
+          <button class="seg-btn active" data-op="mul">✖️ Keer</button>
+          <button class="seg-btn" data-op="div">➗ Delen</button>
+          <button class="seg-btn" data-op="both">🔀 Allebei</button>
+        </div>
+      </div>
+      <div class="stack mt">
+        <button class="btn btn-primary btn-xl" id="btn-start-tables">🚀 Start!</button>
+        <button class="btn btn-ghost" data-go="home">← Terug</button>
+      </div>
+    </section>
+
+    <!-- ===== Spel ===== -->
+    <section class="screen" id="screen-game">
+      <div class="game-top">
+        <button class="icon-btn" id="btn-quit" aria-label="Stop deze ronde">✕</button>
+        <div class="dots" id="round-dots" aria-label="Voortgang van de ronde"></div>
+        <div class="streak" id="streak-box" aria-live="polite">🔥 <span id="streak-num">0</span></div>
+      </div>
+
+      <div class="card question-card" id="question-card">
+        <div class="question" id="question-text" aria-live="polite">3 × 7</div>
+        <div class="answer-box" id="answer-box" aria-label="Jouw antwoord">
+          <span id="answer-text"></span><span class="caret" aria-hidden="true"></span>
+        </div>
+        <div class="feedback" id="feedback" aria-live="assertive"></div>
+      </div>
+
+      <div class="numpad" id="numpad" aria-label="Cijfertoetsen">
+        <button class="key" data-key="1">1</button>
+        <button class="key" data-key="2">2</button>
+        <button class="key" data-key="3">3</button>
+        <button class="key" data-key="4">4</button>
+        <button class="key" data-key="5">5</button>
+        <button class="key" data-key="6">6</button>
+        <button class="key" data-key="7">7</button>
+        <button class="key" data-key="8">8</button>
+        <button class="key" data-key="9">9</button>
+        <button class="key key-back" data-key="back" aria-label="Wissen">⌫</button>
+        <button class="key" data-key="0">0</button>
+        <button class="key key-ok" data-key="ok" aria-label="Antwoord geven">OK</button>
+      </div>
+    </section>
+
+    <!-- ===== Ronde klaar ===== -->
+    <section class="screen" id="screen-summary">
+      <div class="card center">
+        <div class="summary-emoji" id="summary-emoji">🎉</div>
+        <h1 class="screen-title" id="summary-title">Goed gedaan!</h1>
+        <div class="summary-stars" id="summary-stars" aria-label="Sterren deze ronde">⭐⭐⭐</div>
+        <p class="summary-line" id="summary-score">9 van de 10 goed</p>
+        <p class="summary-line xp-gain" id="summary-xp">+95 XP</p>
+        <p class="summary-line levelup" id="summary-levelup" hidden>🚀 Level omhoog!</p>
+      </div>
+
+      <div class="card code-card">
+        <p class="code-label">🔑 Jouw geheime code (bewaar 'm goed!):</p>
+        <div class="code-row">
+          <code id="secret-code">RAKET-XXXX-0</code>
+          <button class="btn btn-mini" id="btn-copy-code">Kopieer</button>
+        </div>
+      </div>
+
+      <div class="stack mt">
+        <button class="btn btn-reward btn-xl" id="btn-minigame" hidden>🎈 Speelpauze verdiend!</button>
+        <button class="btn btn-primary btn-xl" id="btn-again">Nog een rondje! 💪</button>
+        <button class="btn btn-ghost" data-go="home">🏠 Naar start</button>
+      </div>
+    </section>
+
+    <!-- ===== Mini-game: Sterren vangen ===== -->
+    <section class="screen" id="screen-minigame">
+      <div class="game-top">
+        <div class="mini-score">⭐ <span id="mini-score">0</span></div>
+        <h1 class="mini-title">Sterren vangen!</h1>
+        <div class="mini-timer" id="mini-timer">30</div>
+      </div>
+      <div class="mini-arena" id="mini-arena" aria-label="Tik op de vallende sterren"></div>
+      <p class="mini-hint">Tik zo veel mogelijk sterren! ✨</p>
+    </section>
+
+    <!-- ===== Geheime code invoeren ===== -->
+    <section class="screen" id="screen-code">
+      <h1 class="screen-title">🔑 Geheime code</h1>
+      <div class="card">
+        <p class="info-text">Heb je op een ander apparaat gespeeld? Vul hier je geheime code in om verder te gaan.</p>
+        <input class="code-input" id="code-input" type="text" inputmode="text" autocomplete="off"
+               autocapitalize="characters" spellcheck="false" placeholder="bijv. RAKET-7K2M-9"
+               aria-label="Geheime code">
+        <p class="code-error" id="code-error" role="alert" hidden>Hmm, die code klopt niet helemaal. Kijk goed na!</p>
+      </div>
+      <div class="stack mt">
+        <button class="btn btn-primary btn-xl" id="btn-apply-code">Ga verder ▶</button>
+        <button class="btn btn-ghost" id="btn-code-back">← Terug</button>
+      </div>
+    </section>
+
+    <!-- ===== Ouders / leraren ===== -->
+    <section class="screen" id="screen-info">
+      <h1 class="screen-title">Voor ouders en leraren</h1>
+      <div class="card info-card">
+        <h2>Wat is RekenRaket?</h2>
+        <p>RekenRaket traint <strong>rekenvaardigheid</strong> (automatiseren): optellen, aftrekken, de tafels van 1 t/m 10 en de bijbehorende deelsommen. Korte rondes, actief ophalen uit het geheugen, directe feedback en een moeilijkheid die meegroeit met het kind.</p>
+        <h2>Hoe werkt het leren?</h2>
+        <p>Sommen die nog lastig zijn komen vaker terug (gespreide herhaling). Een som telt pas als "beheerst" wanneer het antwoord meerdere keren goed <em>én</em> vlot gegeven is. Fouten worden niet afgestraft: de som komt gewoon nog een keertje langs.</p>
+        <h2>Privacy</h2>
+        <p>Er wordt <strong>niets verstuurd of opgeslagen op internet</strong>. Er is geen account. De voortgang staat alleen in deze browser. Met een geheime code kan een kind op een ander apparaat ongeveer verdergaan waar het was.</p>
+        <label class="toggle-row">
+          <input type="checkbox" id="toggle-motion">
+          <span>Minder beweging (rustigere animaties)</span>
+        </label>
+        <div class="code-row mt-s">
+          <code id="info-code">—</code>
+          <button class="btn btn-mini" id="btn-copy-code2">Kopieer</button>
+        </div>
+        <button class="btn btn-danger mt" id="btn-reset">Voortgang wissen</button>
+      </div>
+      <button class="btn btn-ghost mt" data-go="home">← Terug</button>
+    </section>
+
+  </main>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
