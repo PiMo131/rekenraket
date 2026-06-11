@@ -363,7 +363,7 @@ function bindEvents() {
       refreshTopbar();
       buildTableChips();
       toast('Voortgang gewist');
-      show('welcome!');
+      show('welcome');
     }
   });
 }
