@@ -74,7 +74,7 @@ export function buildRound(state, settings) {
   let candidates = [];
 
   if (settings.mode === 'tables') {
-    candidates = enumerateTableFacts(settings.tables, settings.op);
+    candidates = enumerateTableFacts(settings.tables);
   } else {
     // Trek ruim kandidaten; dubbele sleutels overslaan zodat de
     // gewogen trekking iets te kiezen heeft.
