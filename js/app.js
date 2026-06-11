@@ -2,10 +2,10 @@
    app.js – schermen, spel-lus en invoer
    ============================================================ */
 
-import { loadState, saveState, resetState } from './storage.js';
+import { loadState, saveState, resetState, freshState } from './storage.js';
 import { MAX_LEVEL, CATEGORY_NAME, LEVEL_DESC } from './questions.js';
 import {
-  buildRound, recordAnswer, requeue, starsFor, checkLevelUp,
+  buildRound, recordAnswer, requeue, starsFor, checkLevelUp, checkLevelDown,
   ROUND_SIZE,
 } from './engine.js';
 import { encodeCode, decodeCode, applyDecoded } from './code.js';
@@ -31,6 +31,7 @@ function show(name) {
   if (name === 'info') {
     $('info-code').textContent = encodeCode(state);
     $('toggle-motion').checked = state.settings.reducedMotion;
+    refreshHardFacts();
   }
   window.scrollTo(0, 0);
 }
@@ -47,6 +48,51 @@ function refreshCategoryCards() {
   for (const cat of ['add', 'sub', 'mul', 'div']) {
     const lvl = state.levels[cat];
     $(`lvl-${cat}`).textContent = `Level ${lvl} · ${LEVEL_DESC[cat][lvl - 1]}`;
+  }
+}
+
+/* ---------------- lastige sommen (ouderscherm) ---------------- */
+
+/* Feit-sleutel (bijv. "m:7x8") terug naar leesbare som ("7 × 8"). */
+function factText(key) {
+  const body = key.slice(2);
+  switch (key[0]) {
+    case 'a': return body.replace('+', ' + ');
+    case 's': return body.replace('-', ' − ');
+    case 'm': return body.replace('x', ' × ');
+    default:  return body.replace('/', ' ÷ ');
+  }
+}
+
+function refreshHardFacts() {
+  const list = $('hard-facts');
+  list.innerHTML = '';
+
+  const hard = Object.entries(state.facts)
+    .filter(([, f]) => f.n >= 2 && f.m <= 2)
+    .sort(([, a], [, b]) => (a.m - b.m) || (b.w - a.w) || (b.n - a.n))
+    .slice(0, 5);
+
+  if (hard.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'hf-empty';
+    li.textContent = Object.keys(state.facts).length === 0
+      ? 'Nog niets geoefend — speel eerst een paar rondes.'
+      : 'Geen lastige sommen op dit moment. Lekker bezig! 🌟';
+    list.appendChild(li);
+    return;
+  }
+
+  for (const [key, f] of hard) {
+    const li = document.createElement('li');
+    const som = document.createElement('span');
+    som.className = 'hf-som';
+    som.textContent = factText(key);
+    const info = document.createElement('span');
+    info.className = 'hf-info';
+    info.textContent = `${f.c} van de ${f.n} goed`;
+    li.append(som, info);
+    list.appendChild(li);
   }
 }
 
@@ -197,8 +243,10 @@ function endRound() {
 
   const cat = session.settings.cat;
   let leveledUp = false;
+  let offerLevelDown = false;
   if (session.settings.mode === 'classic') {
     leveledUp = checkLevelUp(state, cat, correct, total, MAX_LEVEL[cat]);
+    offerLevelDown = checkLevelDown(state, cat, correct, total) && !leveledUp;
   }
 
   // samenvatting vullen
@@ -211,6 +259,12 @@ function endRound() {
   $('summary-levelup').hidden = !leveledUp;
   if (leveledUp) {
     $('summary-levelup').textContent = `🚀 Level omhoog! ${CATEGORY_NAME[cat]} level ${state.levels[cat]}`;
+  }
+
+  // gaat het moeizaam? bied een stapje terug aan
+  $('btn-level-down').hidden = !offerLevelDown;
+  if (offerLevelDown) {
+    $('btn-level-down').textContent = `⛽ Even bijtanken op level ${state.levels[cat] - 1}?`;
   }
 
   // speelpauze verdiend?
@@ -276,6 +330,40 @@ async function copyCode(text) {
   }
 }
 
+/* ---------------- volledige back-up (bestand) ---------------- */
+
+function exportProgress() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `rekenraket-voortgang-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Voortgang opgeslagen! 💾');
+}
+
+function importProgress(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    let parsed;
+    try { parsed = JSON.parse(reader.result); } catch { parsed = null; }
+    if (!parsed || parsed.v !== 1 || typeof parsed.levels !== 'object'
+        || typeof parsed.facts !== 'object') {
+      toast('Hmm, dat bestand kan ik niet lezen ✖️');
+      return;
+    }
+    state = Object.assign(freshState(), parsed);
+    saveState(state);
+    applyMotionSetting();
+    refreshTopbar();
+    buildTableChips();
+    toast('Voortgang ingeladen! 🚀');
+    show('home');
+  };
+  reader.readAsText(file);
+}
+
 /* ---------------- events ---------------- */
 
 function bindEvents() {
@@ -324,6 +412,18 @@ function bindEvents() {
   $('btn-copy-code').addEventListener('click', () => copyCode($('secret-code').textContent));
   $('btn-copy-code2').addEventListener('click', () => copyCode($('info-code').textContent));
 
+  // stapje terug na een paar moeizame rondes
+  $('btn-level-down').addEventListener('click', () => {
+    const cat = lastSettings.cat;
+    state.levels[cat] = Math.max(1, state.levels[cat] - 1);
+    state.levelStreak[cat] = 0;
+    state.weakStreak[cat] = 0;
+    saveState(state);
+    refreshTopbar();
+    toast(`Goed plan! Verder op level ${state.levels[cat]} 🚀`);
+    startRound({ mode: 'classic', cat, level: state.levels[cat] });
+  });
+
   // mini-game
   $('btn-minigame').addEventListener('click', () => {
     state.roundsSinceBreak = 0;
@@ -351,6 +451,13 @@ function bindEvents() {
   });
 
   // info / instellingen
+  $('btn-export').addEventListener('click', exportProgress);
+  $('btn-import').addEventListener('click', () => $('import-file').click());
+  $('import-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) importProgress(file);
+    e.target.value = '';
+  });
   $('toggle-motion').addEventListener('change', (e) => {
     state.settings.reducedMotion = e.target.checked;
     applyMotionSetting();

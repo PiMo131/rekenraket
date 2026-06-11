@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="RekenRaket – oefen optellen, aftrekken, keersommen en deelsommen. Snel, leuk en zonder account.">
   <title>RekenRaket 🚀 – Rekenen oefenen</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/fonts.css">
   <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
@@ -153,6 +151,7 @@
       <div class="stack mt">
         <button class="btn btn-reward btn-xl" id="btn-minigame" hidden>🎈 Speelpauze verdiend!</button>
         <button class="btn btn-primary btn-xl" id="btn-again">Nog een rondje! 💪</button>
+        <button class="btn btn-ghost" id="btn-level-down" hidden>⛽ Even bijtanken op level 1?</button>
         <button class="btn btn-ghost" data-go="home">🏠 Naar start</button>
       </div>
     </section>
@@ -192,8 +191,17 @@
         <p>RekenRaket traint <strong>rekenvaardigheid</strong> (automatiseren): optellen, aftrekken, de tafels van 1 t/m 10 en de bijbehorende deelsommen. Korte rondes, actief ophalen uit het geheugen, directe feedback en een moeilijkheid die meegroeit met het kind.</p>
         <h2>Hoe werkt het leren?</h2>
         <p>Sommen die nog lastig zijn komen vaker terug (gespreide herhaling). Een som telt pas als "beheerst" wanneer het antwoord meerdere keren goed <em>én</em> vlot gegeven is. Fouten worden niet afgestraft: de som komt gewoon nog een keertje langs.</p>
+        <h2>Welke sommen zijn nog lastig?</h2>
+        <ul class="hard-facts" id="hard-facts"></ul>
         <h2>Privacy</h2>
         <p>Er wordt <strong>niets verstuurd of opgeslagen op internet</strong>. Er is geen account. De voortgang staat alleen in deze browser. Met een geheime code kan een kind op een ander apparaat ongeveer verdergaan waar het was.</p>
+        <h2>Volledige back-up</h2>
+        <p>De geheime code onthoudt alleen de grote lijnen. Wil je álles bewaren (ook welke sommen al beheerst zijn), bijvoorbeeld voor een nieuwe tablet? Sla de voortgang dan op als bestand.</p>
+        <div class="stack mt-s">
+          <button class="btn btn-ghost btn-on-card" id="btn-export">💾 Voortgang opslaan als bestand</button>
+          <button class="btn btn-ghost btn-on-card" id="btn-import">📂 Voortgang inladen uit bestand</button>
+          <input type="file" id="import-file" accept="application/json,.json" hidden>
+        </div>
         <label class="toggle-row">
           <input type="checkbox" id="toggle-motion">
           <span>Minder beweging (rustigere animaties)</span>

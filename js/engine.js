@@ -165,3 +165,14 @@ export function checkLevelUp(state, cat, correctFirst, total, maxLevel) {
   }
   return false;
 }
+
+/* Gaat het al een paar rondes moeizaam (< 50% in één keer goed)?
+   Dan stellen we vóór om een level terug te gaan — de keuze blijft
+   aan het kind, dus hier alleen de teller bijhouden. */
+export const WEAK_STREAK_FOR_DOWN = 3;
+
+export function checkLevelDown(state, cat, correctFirst, total) {
+  const weak = correctFirst / total < 0.5;
+  state.weakStreak[cat] = weak ? (state.weakStreak[cat] || 0) + 1 : 0;
+  return state.weakStreak[cat] >= WEAK_STREAK_FOR_DOWN && state.levels[cat] > 1;
+}

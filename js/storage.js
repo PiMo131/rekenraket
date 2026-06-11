@@ -12,8 +12,8 @@ export function freshState() {
     stars: 0,
     levels: { add: 1, sub: 1, mul: 1, div: 1 },
     levelStreak: { add: 0, sub: 0, mul: 0, div: 0 },
+    weakStreak: { add: 0, sub: 0, mul: 0, div: 0 },
     tables: [1, 2, 5, 10],     // laatst gekozen tafels
-    tablesOp: 'mul',           // laatst gekozen soort (mul/div/both)
     facts: {},                 // voortgangsmodel per som (zie engine.js)
     roundsDone: 0,
     roundsSinceBreak: 0,       // teller richting speelpauze

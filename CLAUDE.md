@@ -24,8 +24,8 @@ Deployment is GitHub Pages from `main`, root folder. All asset paths must stay r
 
 - `js/app.js` — entry point. Screen navigation, the round loop (`startRound` → `nextQuestion` → `submitAnswer` → `endRound`), the `session` object, numpad + keyboard input, XP/stars/streak bookkeeping, all event binding.
 - `js/questions.js` — question generation. A question is `{ cat, text, answer, key }`; `key` is the canonical fact id (`a:3+4`, `s:9-2`, `m:7x8`, `d:56/7`) that links a question to its progress record. Level definitions (`MAX_LEVEL`, `LEVEL_DESC`, `TABLE_GROUPS`) live here.
-- `js/engine.js` — adaptive engine, the core of the learning system. Per fact key it stores `{ n, c, t, m, w }` (attempts, correct, exponential-average answer time, mastery 0–5, recent-wrong counter) in `state.facts`. Rounds are built by weighted sampling (weight ≈ `(6 − mastery)² + wrong bonus`), wrong answers requeue 3 slots later in the same round (max 4 extras), mastery above 3 only grows for answers within 6 s, and level-up requires 2 consecutive rounds with ≥ 80% first-try accuracy.
-- `js/storage.js` — single localStorage key `rekenraket.v1`. `freshState()` defines the entire state shape; `loadState()` merges stored data over a fresh state, so new fields are backwards-compatible by default.
+- `js/engine.js` — adaptive engine, the core of the learning system. Per fact key it stores `{ n, c, t, m, w }` (attempts, correct, exponential-average answer time, mastery 0–5, recent-wrong counter) in `state.facts`. Rounds are built by weighted sampling (weight ≈ `(6 − mastery)² + wrong bonus`), wrong answers requeue 3 slots later in the same round (max 4 extras), mastery above 3 only grows for answers within 6 s, and level-up requires 2 consecutive rounds with ≥ 80% first-try accuracy. After 3 consecutive rounds below 50% the summary screen *offers* a level down; levels never drop without the child's consent.
+- `js/storage.js` — single localStorage key `rekenraket.v1`. `freshState()` defines the entire state shape; `loadState()` merges stored data over a fresh state, so new fields are backwards-compatible by default. The parent screen can export/import the full state as a JSON file (`exportProgress`/`importProgress` in `app.js`).
 - `js/code.js` — "secret" progress codes for moving between devices: 20 bits (category levels, XP in steps of 100, stars in steps of 10) encoded as 4 base32 chars + 1 checksum char, format `RAKET-XXXX-C`. The leading word is decoration and ignored on decode; legacy 8-char v1 codes are still accepted. The tables selection and the `facts` model are deliberately not encoded.
 - `js/minigame.js` — Snake break game, offered after every 3 rounds (`ROUNDS_PER_BREAK`).
 
@@ -36,5 +36,5 @@ Two round modes flow through `startRound(settings)`:
 ## Conventions
 
 - Mobile-first; respect the reduced-motion setting (`state.settings.reducedMotion`, body class `reduced-motion`) when adding any animation or timed delay.
-- The only external dependency is Google Fonts; don't add others (offline/PWA support is a planned next step in README.md).
+- There are no external dependencies: fonts (Fredoka, Nunito) are hosted locally in `fonts/` via `css/fonts.css`. Don't add external requests (offline/PWA support is a planned next step in README.md).
 - Subtraction questions must never go negative; division questions must always divide evenly — preserve these invariants when touching generation.

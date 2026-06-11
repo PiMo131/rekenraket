@@ -31,7 +31,9 @@ Alle paden in de app zijn relatief (`./css/...`, `./js/...`), dus de app werkt o
 rekenraket/
 ├── index.html          # alle schermen (welkom, home, spel, samenvatting, ...)
 ├── css/
+│   ├── fonts.css       # lokaal gehoste fonts (geen externe afhankelijkheden)
 │   └── style.css       # ruimte-thema, mobile-first, reduced-motion
+├── fonts/              # Fredoka & Nunito (variabele woff2, latin)
 └── js/
     ├── app.js          # schermen, spel-lus, invoer (numpad + toetsenbord)
     ├── questions.js    # somgeneratie per categorie en level
@@ -49,7 +51,9 @@ rekenraket/
 
 **Level omhoog:** pas na **2 rondes op rij met ≥ 80% in één keer goed**. Eén goede ronde is dus geen bewijs van beheersing.
 
-Daarnaast is er de **tafels-kiezer**: het kind (of de leraar) vinkt zelf tafels 1 t/m 10 aan en kiest keersommen, deelsommen of allebei. Handig voor "deze week oefenen we de tafel van 7".
+**Level omlaag:** gaat het 3 rondes op rij moeizaam (< 50% in één keer goed), dan biedt het samenvattingsscherm aan om "even bij te tanken" op een level lager. De keuze blijft aan het kind; er gaat nooit ongevraagd iets omlaag.
+
+Daarnaast is er de **tafels-kiezer**: het kind (of de leraar) vinkt zelf tafels 1 t/m 10 aan en oefent die als keersommen in de vorm zoals op school geleerd (`1 × 7` t/m `10 × 7`). Handig voor "deze week oefenen we de tafel van 7". Deelsommen zitten in de klassieke modus.
 
 ## De adaptieve vraagmotor (`engine.js`)
 
@@ -83,13 +87,20 @@ Bewust weggelaten uit de code: de gekozen tafels (opnieuw aanvinken kost twee se
 
 Na elke ronde staat de actuele code in het samenvattingsscherm; hij is ook altijd te vinden onder *Voor ouders en leraren*.
 
+## Voor ouders en leraren
+
+Het ouderscherm toont naast de geheime code ook:
+
+- **Lastige sommen:** de (maximaal 5) sommen waar het kind nog het meest moeite mee heeft, rechtstreeks uit het voortgangsmodel van de adaptieve motor. Handig om te zien waar gericht oefenen loont.
+- **Volledige back-up:** de geheime code bewaart alleen de grote lijnen; "Voortgang opslaan als bestand" downloadt álles (inclusief de individuele somgeschiedenis) als JSON, en "Voortgang inladen" zet dat op een ander apparaat weer terug.
+
 ## Privacy
 
-Er wordt niets verstuurd. Voortgang staat in `localStorage` van de browser. "Voortgang wissen" in het ouderscherm verwijdert alles.
+Er wordt niets verstuurd. Voortgang staat in `localStorage` van de browser. "Voortgang wissen" in het ouderscherm verwijdert alles. De fonts worden lokaal meegeleverd, dus de app doet geen enkel extern verzoek.
 
 ## Volgende ontwikkelstappen
 
-1. **PWA / offline:** manifest + service worker zodat de app installeerbaar is en offline werkt (de enige externe afhankelijkheid is nu Google Fonts; die lokaal hosten).
+1. **PWA / offline:** manifest + service worker zodat de app installeerbaar is en offline werkt (de fonts zijn al lokaal; er zijn geen externe afhankelijkheden meer).
 2. **Speed Run-modus:** zoveel mogelijk sommen in een vriendelijke tijdslimiet.
 3. **Avonturenpad:** levelkaart met werelden/planeten en badges.
 4. **Meerkeuze-invoer** als optie voor de allerjongsten.
